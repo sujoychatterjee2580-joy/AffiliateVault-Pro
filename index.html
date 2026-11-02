@@ -293,4 +293,485 @@
                     <div>
                         <span class="text-[10px] bg-slate-800 text-slate-400 font-bold px-1.5 py-0.5 rounded uppercase">Free</span>
                         <h4 class="font-bold text-white text-sm mt-1">Standard Queue</h4>
-                 
+                        <p class="text-[11px] text-slate-400 mt-0.5">• 7-14 Day Review Queue<br>• Basic Directory Entry<br>• Standard Listing</p>
+                    </div>
+                    <span class="font-black text-slate-400 text-base">Free ($0)</span>
+                </div>
+            </div>
+
+            <!-- Form Inputs -->
+            <div class="flex flex-col gap-2.5 text-xs">
+                <input id="subName" type="text" placeholder="SaaS / Product Name (e.g. LeadPulse AI)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-emerald-500">
+                <input id="subUrl" type="url" placeholder="Affiliate Signup URL (https://...)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                <input id="subCommission" type="text" placeholder="Commission Terms (e.g. 40% Lifetime Monthly Recurring)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="subNiche" class="bg-slate-950 border border-slate-800 text-white rounded-xl p-2.5 font-bold focus:outline-none focus:border-emerald-500">
+                        <option value="ai">AI & Writing Tools</option>
+                        <option value="marketing">SEO & Marketing</option>
+                        <option value="dev">Cloud & Dev Tools</option>
+                        <option value="crm">Sales & CRM</option>
+                    </select>
+                    <input id="subCookie" type="text" placeholder="Cookie Duration (e.g. 60 Days)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+
+            <button id="btnSubmitProgramAction" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm shadow-xl transition active:scale-95 flex items-center justify-center gap-2">
+                <span>Submit Affiliate Program</span> <span>🚀</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toastBox" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-full text-xs shadow-2xl z-50 transition-all flex items-center gap-1.5">
+        <span>✨</span> <span id="toastMsg">Action completed!</span>
+    </div>
+
+    <script>
+        function notify(msg) {
+            const t = document.getElementById('toastBox');
+            document.getElementById('toastMsg').innerText = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 2300);
+        }
+
+        function copyClipboard(txt) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = txt;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
+            notify('Affiliate link copied to clipboard! 📋');
+        }
+
+        // --- Database of Verified High-Paying Recurring Programs ---
+        let affiliatePrograms = [
+            {
+                id: 1,
+                name: 'ConvertKit (Kit)',
+                niche: 'marketing',
+                rateNum: 40,
+                commission: '40% Lifetime Recurring',
+                cookie: '90 Days',
+                payout: 'PayPal / Stripe',
+                ltv: '18 Months',
+                icon: '✉️',
+                desc: 'Creator marketing & newsletter platform. Every referred newsletter host earns you 40% every single month.',
+                strategy: 'Target YouTubers and creators who want to own their audience. Write a "Why I switched to Kit" comparison.',
+                targetBuyer: 'Writers, creators, course sellers',
+                url: 'https://convertkit.com/affiliate'
+            },
+            {
+                id: 2,
+                name: 'Jasper AI',
+                niche: 'ai',
+                rateNum: 30,
+                commission: '30% Lifetime Recurring',
+                cookie: '30 Days',
+                payout: 'PayPal / Wire',
+                ltv: '12 Months',
+                icon: '🤖',
+                desc: 'Enterprise AI copywriting and brand marketing assistant. High average monthly plan values ($49 - $125/mo).',
+                strategy: 'Create tutorials showing marketing agencies how to scale blog production with AI.',
+                targetBuyer: 'Marketing agencies, copywriters',
+                url: 'https://jasper.ai/partners'
+            },
+            {
+                id: 3,
+                name: 'SEMrush',
+                niche: 'marketing',
+                rateNum: 40,
+                commission: '40% Recurring + $200 Bonus',
+                cookie: '120 Days',
+                payout: 'Impact / Wire',
+                ltv: '22 Months',
+                icon: '📈',
+                desc: 'The gold-standard SEO and competitor analysis tool. Businesses rarely churn, resulting in years of passive checks.',
+                strategy: 'Publish in-depth competitor keyword audit tutorials on YouTube or your blog.',
+                targetBuyer: 'SEO professionals, e-commerce owners',
+                url: 'https://semrush.com/affiliates'
+            },
+            {
+                id: 4,
+                name: 'Make.com (Integromat)',
+                niche: 'dev',
+                rateNum: 30,
+                commission: '30% Lifetime Recurring',
+                cookie: '60 Days',
+                payout: 'PayPal / Bank',
+                ltv: '16 Months',
+                icon: '⚙️',
+                desc: 'Visual workflow automation software connecting 1,000+ apps. Developers and operators rely on it daily.',
+                strategy: 'Share automated workflows (e.g. "How to auto-publish X posts from Google Sheets") on LinkedIn.',
+                targetBuyer: 'No-code builders, operations teams',
+                url: 'https://make.com/en/affiliates'
+            },
+            {
+                id: 5,
+                name: 'Notion',
+                niche: 'dev',
+                rateNum: 50,
+                commission: '50% First Year Monthly',
+                cookie: '90 Days',
+                payout: 'Stripe / PartnerStack',
+                ltv: '12 Months',
+                icon: '📑',
+                desc: 'All-in-one workspace and knowledge base. Offers a massive 50% revenue share on all team plan conversions.',
+                strategy: 'Give away free Notion productivity templates and recommend the Team plan for collaboration.',
+                targetBuyer: 'Students, startups, remote teams',
+                url: 'https://notion.so/affiliates'
+            },
+            {
+                id: 6,
+                name: 'Pipedrive CRM',
+                niche: 'crm',
+                rateNum: 33,
+                commission: '33% First Year Recurring',
+                cookie: '60 Days',
+                payout: 'PayPal / Wire',
+                ltv: '15 Months',
+                icon: '💼',
+                desc: 'Sales pipeline and CRM software designed by salespeople for salespeople. High conversion rate among sales teams.',
+                strategy: 'Create sales funnel optimization tutorials targeting B2B consultants and agencies.',
+                targetBuyer: 'Sales managers, small business teams',
+                url: 'https://pipedrive.com/en/partner'
+            },
+            {
+                id: 7,
+                name: 'ClickFunnels',
+                niche: 'marketing',
+                rateNum: 40,
+                commission: '40% Lifetime Recurring',
+                cookie: 'Lifetime Sticky',
+                payout: 'Tipalti / Direct Bank',
+                ltv: '24 Months',
+                icon: '🚀',
+                desc: 'Legendary sales funnel builder with high monthly subscription pricing ($147 - $297/mo). Massive payouts.',
+                strategy: 'Share ready-made share funnels that automatically import into the user’s trial account.',
+                targetBuyer: 'Digital marketers, course creators',
+                url: 'https://clickfunnels.com/affiliate'
+            },
+            {
+                id: 8,
+                name: 'NordVPN',
+                niche: 'dev',
+                rateNum: 40,
+                commission: '40% Recurring / Renewal',
+                cookie: '30 Days',
+                payout: 'Impact / Wire',
+                ltv: '20 Months',
+                icon: '🛡️',
+                desc: 'World’s most popular cybersecurity and VPN provider with high renewal commission rates.',
+                strategy: 'Focus on digital nomads, remote workers, and privacy-conscious users streaming content.',
+                targetBuyer: 'Remote workers, travelers, gamers',
+                url: 'https://nordvpn.com/affiliate'
+            }
+        ];
+
+        // Saved Programs in LocalStorage
+        let savedIds = [];
+        try {
+            const raw = localStorage.getItem('aff_vault_saved');
+            if (raw) savedIds = JSON.parse(raw);
+        } catch(e) {}
+
+        function updateSavedUI() {
+            document.getElementById('savedCountBadge').innerText = savedIds.length;
+            try {
+                localStorage.setItem('aff_vault_saved', JSON.stringify(savedIds));
+            } catch(e) {}
+        }
+        updateSavedUI();
+
+        // --- Render Programs Directory ---
+        const programsGrid = document.getElementById('programsGrid');
+        let activeNiche = 'all';
+        let activeMinRate = 'all';
+
+        function renderPrograms(list) {
+            programsGrid.innerHTML = '';
+            if (!list.length) {
+                programsGrid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500 text-xs">
+                        No affiliate programs match your filter. Try adjusting criteria!
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach(p => {
+                const isSaved = savedIds.includes(p.id);
+                const card = document.createElement('div');
+                card.className = 'program-card bg-slate-900 border border-slate-800 rounded-3xl p-5 flex flex-col justify-between gap-4 shadow-xl cursor-pointer';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start pb-2 border-b border-slate-800/80">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-xl shadow-inner">
+                                    ${p.icon}
+                                </div>
+                                <div>
+                                    <h4 class="text-xs sm:text-sm font-black text-white">${p.name}</h4>
+                                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">${p.niche}</span>
+                                </div>
+                            </div>
+                            <button class="btn-save-prog text-base p-1 hover:scale-125 transition ${isSaved ? 'text-pink-500' : 'text-slate-600'}" title="Save to My Stack">
+                                ${isSaved ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+
+                        <div class="my-3 flex items-center justify-between bg-slate-950 p-2.5 rounded-2xl border border-slate-800">
+                            <span class="text-xs font-black text-emerald-400 font-mono">${p.commission}</span>
+                            <span class="text-[10px] text-slate-400">${p.cookie} Cookie</span>
+                        </div>
+
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            ${p.desc}
+                        </p>
+                    </div>
+
+                    <div class="flex justify-between items-center gap-2 pt-2 border-t border-slate-800/80">
+                        <span class="text-[10px] text-slate-500">Avg LTV: <strong class="text-slate-300">${p.ltv}</strong></span>
+                        <button class="btn-view-strategy bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs px-3.5 py-1.5 rounded-xl shadow transition active:scale-95 flex items-center gap-1">
+                            <span>Strategy</span> <span>↗</span>
+                        </button>
+                    </div>
+                `;
+
+                // Save to Stack Event
+                const btnSave = card.querySelector('.btn-save-prog');
+                btnSave.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (savedIds.includes(p.id)) {
+                        savedIds = savedIds.filter(id => id !== p.id);
+                        btnSave.innerText = '🤍';
+                        btnSave.className = 'btn-save-prog text-base p-1 text-slate-600';
+                        notify(`Removed ${p.name} from My Stack`);
+                    } else {
+                        savedIds.push(p.id);
+                        btnSave.innerText = '❤️';
+                        btnSave.className = 'btn-save-prog text-base p-1 text-pink-500';
+                        notify(`Saved ${p.name} to My Stack! ❤️`);
+                    }
+                    updateSavedUI();
+                });
+
+                // Open Strategy Modal
+                card.querySelector('.btn-view-strategy').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openProgramModal(p);
+                });
+                card.addEventListener('click', () => openProgramModal(p));
+
+                programsGrid.appendChild(card);
+            });
+        }
+
+        function filterAndRender() {
+            let res = affiliatePrograms;
+            if (activeNiche !== 'all') {
+                res = res.filter(p => p.niche === activeNiche);
+            }
+            if (activeMinRate !== 'all') {
+                const min = parseInt(activeMinRate, 10);
+                res = res.filter(p => p.rateNum >= min);
+            }
+            const q = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (q) {
+                res = res.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.niche.includes(q));
+            }
+            renderPrograms(res);
+        }
+        filterAndRender();
+
+        document.getElementById('searchInput').addEventListener('input', filterAndRender);
+
+        document.querySelectorAll('.niche-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.niche-pill').forEach(b => {
+                    b.className = 'niche-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-950 text-slate-400 hover:text-white border border-slate-800 transition whitespace-nowrap';
+                });
+                btn.className = 'niche-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow transition whitespace-nowrap';
+                activeNiche = btn.dataset.niche;
+                filterAndRender();
+            });
+        });
+
+        document.getElementById('selectCommissionFilter').addEventListener('change', (e) => {
+            activeMinRate = e.target.value;
+            filterAndRender();
+        });
+
+        // View Saved Stack
+        document.getElementById('btnSavedStack').addEventListener('click', () => {
+            const savedList = affiliatePrograms.filter(p => savedIds.includes(p.id));
+            if (!savedList.length) {
+                notify('No saved programs yet. Click ❤️ on any card to save!');
+                return;
+            }
+            renderPrograms(savedList);
+            notify(`Showing ${savedList.length} saved programs! ❤️`);
+        });
+
+        document.getElementById('btnLogoHome').addEventListener('click', () => {
+            activeNiche = 'all';
+            activeMinRate = 'all';
+            document.querySelectorAll('.niche-pill')[0].click();
+        });
+
+        // ==============================================
+        // LIVE RECURRING INCOME CALCULATOR ENGINE
+        // ==============================================
+        const sliderCustomers = document.getElementById('sliderCustomers');
+        const sliderSubPrice = document.getElementById('sliderSubPrice');
+        const sliderCommission = document.getElementById('sliderCommission');
+
+        function recalculateSimulator() {
+            const custPerMonth = parseInt(sliderCustomers.value, 10);
+            const price = parseInt(sliderSubPrice.value, 10);
+            const rate = parseInt(sliderCommission.value, 10) / 100;
+
+            document.getElementById('labelCustomersPerMonth').innerText = `${custPerMonth} Customers / mo`;
+            document.getElementById('labelSubPrice').innerText = `$${price} / month`;
+            document.getElementById('labelCommissionRate').innerText = `${Math.round(rate * 100)}% Monthly Lifetime`;
+
+            // Month 3: 3 * custPerMonth active
+            const m3Monthly = (custPerMonth * 3) * price * rate;
+            // Month 6: 6 * custPerMonth active
+            const m6Monthly = (custPerMonth * 6) * price * rate;
+            // Month 12: 12 * custPerMonth active
+            const m12Monthly = (custPerMonth * 12) * price * rate;
+
+            const annualRunRate = m12Monthly * 12;
+
+            document.getElementById('outCalcM3').innerText = `$${Math.round(m3Monthly).toLocaleString()} / month`;
+            document.getElementById('outCalcM6').innerText = `$${Math.round(m6Monthly).toLocaleString()} / month`;
+            document.getElementById('outCalcM12').innerText = `$${Math.round(m12Monthly).toLocaleString()} / month`;
+            document.getElementById('outCalcYearly').innerText = `Total Annual Recurring Run-Rate: $${Math.round(annualRunRate).toLocaleString()} / year!`;
+        }
+
+        sliderCustomers.addEventListener('input', recalculateSimulator);
+        sliderSubPrice.addEventListener('input', recalculateSimulator);
+        sliderCommission.addEventListener('input', recalculateSimulator);
+        recalculateSimulator();
+
+        // ==============================================
+        // IN-APP STRATEGY & DETAILS MODAL
+        // ==============================================
+        let activeModalProg = null;
+        const programDetailModal = document.getElementById('programDetailModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalName = document.getElementById('modalName');
+        const modalNiche = document.getElementById('modalNiche');
+        const modalCommissionBadge = document.getElementById('modalCommissionBadge');
+        const modalCookie = document.getElementById('modalCookie');
+        const modalPayout = document.getElementById('modalPayout');
+        const modalLtv = document.getElementById('modalLtv');
+        const modalStrategyText = document.getElementById('modalStrategyText');
+        const modalTargetBuyer = document.getElementById('modalTargetBuyer');
+        const btnCloseDetailModal = document.getElementById('btnCloseDetailModal');
+        const btnCopyProgramLink = document.getElementById('btnCopyProgramLink');
+        const btnApplyOfficial = document.getElementById('btnApplyOfficial');
+
+        function openProgramModal(p) {
+            activeModalProg = p;
+            modalIcon.innerText = p.icon;
+            modalName.innerText = p.name;
+            modalNiche.innerText = p.niche.toUpperCase();
+            modalCommissionBadge.innerText = p.commission;
+            modalCookie.innerText = p.cookie;
+            modalPayout.innerText = p.payout;
+            modalLtv.innerText = p.ltv;
+            modalStrategyText.innerText = p.strategy;
+            modalTargetBuyer.innerText = p.targetBuyer;
+
+            programDetailModal.classList.remove('hidden');
+        }
+
+        btnCloseDetailModal.addEventListener('click', () => programDetailModal.classList.add('hidden'));
+
+        btnCopyProgramLink.addEventListener('click', () => {
+            if (activeModalProg) copyClipboard(activeModalProg.url);
+        });
+
+        btnApplyOfficial.addEventListener('click', () => {
+            if (!activeModalProg) return;
+            copyClipboard(activeModalProg.url);
+            notify(`URL copied! You can visit partner portal: ${activeModalProg.url}`);
+        });
+
+        document.getElementById('btnSpotlightView').addEventListener('click', () => {
+            openProgramModal(affiliatePrograms[0]); // ConvertKit spotlight
+        });
+
+        // ==============================================
+        // SUBMIT PROGRAM MONETIZATION MODAL ($49)
+        // ==============================================
+        const submitModal = document.getElementById('submitModal');
+        const btnOpenSubmitModal = document.getElementById('btnOpenSubmitModal');
+        const btnCloseSubmitModal = document.getElementById('btnCloseSubmitModal');
+        const btnSubmitProgramAction = document.getElementById('btnSubmitProgramAction');
+
+        btnOpenSubmitModal.addEventListener('click', () => submitModal.classList.remove('hidden'));
+        btnCloseSubmitModal.addEventListener('click', () => submitModal.classList.add('hidden'));
+
+        let selectedTier = 'featured';
+        const tierFeatured = document.getElementById('tierFeatured');
+        const tierStandard = document.getElementById('tierStandard');
+
+        tierFeatured.addEventListener('click', () => {
+            selectedTier = 'featured';
+            tierFeatured.className = 'border-2 border-amber-500 bg-amber-950/30 p-3.5 rounded-2xl flex flex-col justify-between gap-2 cursor-pointer shadow-md';
+            tierStandard.className = 'border border-slate-800 bg-slate-950 p-3.5 rounded-2xl flex flex-col justify-between gap-2 cursor-pointer';
+            btnSubmitProgramAction.innerText = 'Pay $49 & Publish Spotlight 🚀';
+        });
+
+        tierStandard.addEventListener('click', () => {
+            selectedTier = 'standard';
+            tierStandard.className = 'border-2 border-emerald-500 bg-emerald-950/30 p-3.5 rounded-2xl flex flex-col justify-between gap-2 cursor-pointer shadow-md';
+            tierFeatured.className = 'border border-slate-800 bg-slate-950 p-3.5 rounded-2xl flex flex-col justify-between gap-2 cursor-pointer';
+            btnSubmitProgramAction.innerText = 'Submit to Free Review Queue ⏱️';
+        });
+
+        btnSubmitProgramAction.addEventListener('click', () => {
+            const name = document.getElementById('subName').value.trim();
+            const url = document.getElementById('subUrl').value.trim();
+            const commission = document.getElementById('subCommission').value.trim();
+            const niche = document.getElementById('subNiche').value;
+            const cookie = document.getElementById('subCookie').value.trim() || '60 Days';
+
+            if (!name || !url) {
+                notify('⚠️ Please provide program name and affiliate URL.');
+                return;
+            }
+
+            const newProg = {
+                id: Date.now(),
+                name: name,
+                niche: niche,
+                rateNum: 40,
+                commission: commission || '40% Monthly Recurring',
+                cookie: cookie,
+                payout: 'PayPal / Stripe',
+                ltv: '12 Months',
+                icon: '🚀',
+                desc: 'Newly submitted SaaS partner program. High conversion potential.',
+                strategy: 'Pitch to founders and online business owners via case studies.',
+                targetBuyer: 'Digital entrepreneurs',
+                url: url.startsWith('http') ? url : `https://${url}`
+            };
+
+            affiliatePrograms.unshift(newProg);
+            filterAndRender();
+            submitModal.classList.add('hidden');
+            notify(`🎉 Success! ${name} submitted and live on directory!`);
+        });
+    </script>
+</body>
+</html>
+```
